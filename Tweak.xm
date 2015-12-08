@@ -222,7 +222,8 @@ static Context *mouseRenderContext = NULL;
 static CGSize mouseImageSize;
 
 // Screen limits (portrait)
-static float screen_width = 0, screen_height = 0;
+static float screen_width = 320;
+static float screen_height = 480;
 
 // coordinates in portrait orientatino
 static CGPoint currentMouseLocation = { 0, 0};
@@ -258,7 +259,10 @@ static float mouseSpeed = 1.0f;
 
 // GS functions
 static bool PurpleAllocated = NO;
-mach_port_t (*GSTakePurpleSystemEventPort)(void);
+static mach_port_t (*GSTakePurpleSystemEventPort)(void);
+static CGSize      (*$GSMainScreenSize)(void);
+static float       (*$GSMainScreenScaleFactor)(void);
+static float       (*$GSMainScreenOrientation)(void);
 
 //==============================================================================
 
@@ -288,6 +292,12 @@ static inline void lookupSymbol(const char *libraryFilePath, const char *symbolN
 template <typename Type2>
 static inline void MyMSHookSymbol(Type2 *&value, const char *name, void *handle = RTLD_DEFAULT) {
     value = reinterpret_cast<Type2 *>(dlsym(handle, name));
+}
+
+template <typename Type_>
+static void dlset(Type_ &function, const char *name) {
+    function = reinterpret_cast<Type_>(dlsym(RTLD_DEFAULT, name));
+    // NSLog(@"hid-support: dlset %s = %p", name, function);
 }
 
 //==============================================================================
@@ -1010,20 +1020,22 @@ static void unlockDevice(){
     CFRunLoopAddSource(CFRunLoopGetCurrent(), source, kCFRunLoopCommonModes);
 
     // Get initial screen size
-    // FIXME: Consider adding support for TVOut* users
-    CGRect rect   = [[UIScreen mainScreen] bounds];
-    screen_width  = rect.size.width  -1;
-    screen_height = rect.size.height -1;
+    dlset($GSMainScreenSize, "GSMainScreenSize");
+    dlset($GSMainScreenScaleFactor, "GSMainScreenScaleFactor");
+    dlset($GSMainScreenOrientation, "GSMainScreenOrientation");
+
+    if ($GSMainScreenScaleFactor) {
+        retina_factor = $GSMainScreenScaleFactor();
+    }
+    if ($GSMainScreenSize){
+        CGSize screenSize = $GSMainScreenSize();
+        screen_width = screenSize.width / retina_factor;
+        screen_height = screenSize.height / retina_factor;
+    }
     
     // iPad has rotated framebuffer
     if ([[UIDevice currentDevice] respondsToSelector:@selector(userInterfaceIdiom)]){
         is_iPad = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
-    }
-
-    // handle retina devices (checks for iOS4.x)
-    if ([[UIScreen mainScreen] respondsToSelector:@selector(displayLinkWithTarget:selector:)]){
-        UIScreen *mainScreen = [UIScreen mainScreen];
-        retina_factor = mainScreen.scale;
     }
 
     NSLog(@"MouseSupport: screen size: %f x %f, retina %f, is_iPad %u", screen_width, screen_height, retina_factor, is_iPad);
