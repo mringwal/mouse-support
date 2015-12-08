@@ -13,7 +13,9 @@ include $(THEOS)/makefiles/common.mk
 TWEAK_NAME = MouseSupport
 MouseSupport_FILES = Tweak.xm
 MouseSupport_CFLAGS = -I. -I.. -I3rdParty
-MouseSupport_LDFLAGS = -L../hid-support/libhidsupport/.theos/obj/ -lhidsupport
+MouseSupport_CFLAGS += -I/Projects/RocketBootstrap/
+MouseSupport_CFLAGS += -I/Projects/hid-support/
+MouseSupport_LDFLAGS = -L/Projects/hid-support/libhidsupport/.theos/obj/ -lhidsupport
 MouseSupport_FRAMEWORKS = UIKit QuartzCore CoreGraphics
 MouseSupport_PRIVATE_FRAMEWORKS = GraphicsServices
 MouseSupport_LIBRARIES = substrate

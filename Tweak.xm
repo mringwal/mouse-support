@@ -55,7 +55,8 @@
 #include <mach/mach_init.h>
 #include <dlfcn.h>
 
-#include "../hid-support/hid-support.h"
+#include "hid-support.h"
+#include "RocketBootstrap.h"
 
 typedef struct {
     float x, y;
@@ -361,6 +362,16 @@ static void postMouseEventToSpringBoard(float x, float y, int click){
     sendGSEventToSpringBoard( (GSEventRecord*) event);  
     
     prev_click = click;  
+}
+
+//==============================================================================
+
+static void try_rocketbootstrap_cfmessageportexposelocal(CFMessagePortRef local){
+    void * rbs_lib = dlopen("/usr/lib/librocketbootstrap.dylib", RTLD_LAZY);
+    if (!rbs_lib) return;
+    void (*cfmessageportexposelocal)(CFMessagePortRef) =(void (*)(CFMessagePortRef)) dlsym(rbs_lib, "rocketbootstrap_cfmessageportexposelocal");
+    if (!cfmessageportexposelocal);
+    cfmessageportexposelocal(local);
 }
 
 //==============================================================================
@@ -992,6 +1003,8 @@ static void unlockDevice(){
     // NOTE: Using kCFRunLoopDefaultMode causes issues when dragging SpringBoard's
     //       scrollview; why kCFRunLoopCommonModes fixes the issue, I do not know.
     CFMessagePortRef local = CFMessagePortCreateLocal(NULL, CFSTR(MACH_PORT_NAME), mouseCallBack, NULL, NULL);
+    try_rocketbootstrap_cfmessageportexposelocal(local);
+
     CFRunLoopSourceRef source = CFMessagePortCreateRunLoopSource(NULL, local, 0);
     //CFRunLoopAddSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
     CFRunLoopAddSource(CFRunLoopGetCurrent(), source, kCFRunLoopCommonModes);
