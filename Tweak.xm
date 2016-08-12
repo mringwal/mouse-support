@@ -813,15 +813,27 @@ static void unlockDevice(){
         case 90:
             mousePoint.x = point.x - mouseImageSize.height;
             mousePoint.y = point.y;
+            if (!cloakingSupport){
+                mousePoint.x -= 1;
+                mousePoint.y += 1;
+            }
             break;
         case 180:
             mousePoint.x = point.x - mouseImageSize.width;
             mousePoint.y = point.y - mouseImageSize.height;
+            if (!cloakingSupport){
+                mousePoint.x -= 1;
+                mousePoint.y -= 1;
+            }
             break;
         case -90: // Home button left
         case 270: 
             mousePoint.x = point.x;
             mousePoint.y = point.y - mouseImageSize.width;
+            if (!cloakingSupport){
+                mousePoint.x += 1;
+                mousePoint.y -= 1;
+            }
             break;
     }
     mouseView.origin = mousePoint;
