@@ -1,6 +1,6 @@
 Package: jp.ashikase.mousesupport
 Name: MouseSupport
-Version: svn.r222
+Version: svn.r223
 Architecture: iphoneos-arm
 Description: Pointer and external input extension
 Homepage: https://github.com/mringwal/mouse-support
@@ -8,6 +8,6 @@ Depiction: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=mousesuppo
 Maintainer: BigBoss <bigboss@thebigboss.org>
 Author: Matthias Ringwald <tickets@btstack.uservoice.com>
 Section: System
-Depends: mobilesubstrate (>= 0.9.5101), firmware (>=3.0), com.rpetrich.rocketbootstrap (>= 1.0.2) | firmware (<< 7.0), preferenceloader (>= 2.2.2), applist, ch.ringwald.hidsupport (>= 1.3)
+Depends: mobilesubstrate (>= 0.9.5101), firmware (>=3.0), com.rpetrich.rocketbootstrap (>= 1.0.2) | firmware (<< 7.0), preferenceloader (>= 2.2.2), applist, ch.ringwald.hidsupport (>= 1.3.1)
 Sponsor: thebigboss.org <http://thebigboss.org>
 Tag: role::hacker
