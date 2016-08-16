@@ -1,6 +1,6 @@
 Package: jp.ashikase.mousesupport
 Name: MouseSupport
-Version: svn.r223
+Version: 1:1.0
 Architecture: iphoneos-arm
 Description: Pointer and external input extension
 Homepage: https://github.com/mringwal/mouse-support
